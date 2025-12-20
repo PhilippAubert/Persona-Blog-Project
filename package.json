@@ -1,0 +1,23 @@
+{
+  "name": "persona-blog-project",
+  "version": "1.0.0",
+  "description": "Based on  https://roadmap.sh/projects/personal-blog",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PhilippAubert/Persona-Blog-Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PhilippAubert/Persona-Blog-Project/issues"
+  },
+  "homepage": "https://github.com/PhilippAubert/Persona-Blog-Project#readme",
+  "dependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
