@@ -9,28 +9,156 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+h1,
+h4,
+p {
+    margin-block: 0;
+}
+
 body {
     display: grid;
     grid-template-rows: auto 1fr auto;
 }
 
 header {
-    padding: 0 1rem;
+    padding: 2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+ul {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    list-style-type: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+.button-area {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.button {
+    padding: 0.5em 1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    border: 1px solid #c0c;
+    border-radius: 5px;
+    min-width: 73px;
+    background-color: #00f;
+    color: #fff;
+}
+
+.button:hover {
+    color: #c0c;
+    background-color: #fff;
+    border: 1px solid #9b9b9b;
+}
+
+.info-area {
     display: flex;
     flex-direction: column;
+    width: 100%;
     justify-content: flex-end;
     align-items: flex-end;
-    gap: 8px;
+}
+
+.headline {
+    font-style: oblique;
+    text-transform: uppercase;
+    font-size: 1.8em;
+}
+
+.date {
+    color: #9b9b9b;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    font-style: oblique;
 }
 
 main {
     padding: 0 1rem;
     display: flex;
     justify-content: flex-start;
+    overflow-y: scroll;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+input {
+    flex:1;
+}
+
+textarea {
+    flex: 22;
+}
+
+
+.article-item {
+    width: 100%;
+}
+
+.article-link {
+    text-decoration: none;
+}
+
+.article-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.article-title {
+    margin: 0;
+    color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: oblique;
+    font-weight: 800;
+    font-size: 1.3rem;
+}
+
+.article-date {
+    margin: 0;
+    color: #9b9b9b;
+    font-style: italic;
+    text-transform: uppercase;
+}
+
+.admin-commands-area {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+
+.text {
+    padding: 1rem;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    line-height: 1.6;
 }
 
 footer {
-    padding: 0 1rem;
+    padding: 2rem;
     display: flex;
     justify-content: flex-end;
+    font-style: oblique;
+    text-transform: uppercase;
 }

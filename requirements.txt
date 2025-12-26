@@ -9,13 +9,15 @@ You can use JSON or Markdown format to store the articles.
 Backend
 
 You can use any programming language to build the backend of the blog. 
-You don't have to make it as an API for this project, we have other projects for that. 
-You can have pages that render the HTML directly from the server and forms that submit data to the server.
+You don't have to make it as an API for this project, 
+we have other projects for that. 
+You can have pages that render the HTML directly 
+from the server and forms that submit data to the server.
 
 Frontend
 
 For the frontend, you can use HTML and CSS (no need for JavaScript for now). 
-You can use any templating engine to render the articles on the frontend.
+You can use any templating engine torender the articles on the frontend.
 
 Authentication
 
