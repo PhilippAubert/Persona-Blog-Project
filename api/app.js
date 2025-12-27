@@ -2,6 +2,7 @@ import http from "http";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { parse } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,9 +11,9 @@ const port = 3000;
 const publicDir = path.join(__dirname, "../public");
 
 const server = http.createServer((req, res) => {
-
-  const filePath = path.join(publicDir, req.url === "/" ? "index.html" : req.url);
-
+    
+  const cleanPath = parse(req.url).pathname;
+  const filePath = path.join(publicDir, cleanPath === "/" ? "index.html" : cleanPath);
   const ext = path.extname(filePath);
 
   const contentType = ext === ".css" ? "text/css" : "text/html";
