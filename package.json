@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/PhilippAubert/Persona-Blog-Project/issues"
   },
-  "homepage": "https://github.com/PhilippAubert/Persona-Blog-Project#readme"
+  "homepage": "https://github.com/PhilippAubert/Persona-Blog-Project#readme",
+  "type": "module",
+  "dependencies": {
+    "nodemon": "^3.1.11"
+  }
 }
