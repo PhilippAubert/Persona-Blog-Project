@@ -51,7 +51,7 @@ a {
     padding: 0.5em 1em;
     text-transform: uppercase;
     font-weight: 600;
-    border: 1px solid #c0c;
+    border: 1px solid #00f;
     border-radius: 5px;
     min-width: 73px;
     background-color: #00f;
@@ -59,9 +59,9 @@ a {
 }
 
 .button:hover {
-    color: #c0c;
+    color: #00f;
     background-color: #fff;
-    border: 1px solid #9b9b9b;
+    border: 1px solid #00f;
 }
 
 .info-area {
