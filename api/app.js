@@ -11,10 +11,12 @@ const port = 3000;
 const publicDir = path.join(__dirname, "../public");
 
 const server = http.createServer((req, res) => {
-    
+
   const cleanPath = parse(req.url).pathname;
   const filePath = path.join(publicDir, cleanPath === "/" ? "index.html" : cleanPath);
   const ext = path.extname(filePath);
+
+  
 
   const contentType = ext === ".css" ? "text/css" : "text/html";
 

@@ -86,7 +86,7 @@ a {
 }
 
 main {
-    padding: 0 1rem;
+    padding: 0 2rem;
     display: flex;
     justify-content: flex-start;
     overflow-y: scroll;
@@ -107,6 +107,15 @@ textarea {
     flex: 22;
 }
 
+.username-input {
+    height: 32px;
+    flex:unset;
+}
+
+.pw-input {
+    height: 32px;
+    flex:unset;
+}
 
 .article-item {
     width: 100%;
