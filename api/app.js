@@ -1,15 +1,15 @@
 import ejs from "ejs";
 import dotenv from "dotenv";
-import jwt from 'jsonwebtoken';
-import {parse as parseQuery} from "querystring";
+import jwt from "jsonwebtoken";
+import { parse as parseQuery } from "querystring";
 
 import http from "http";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath, parse
-} from "url";
+import { fileURLToPath, parse } from "url";
 
 import pageMap from "./config/pageMap.js";
+import isAuthenticated from "./auth/authenticate.js";
 
 const FILENAME = fileURLToPath(import.meta.url);
 const DIRNAME = path.dirname(FILENAME);
@@ -21,6 +21,8 @@ dotenv.config();
 const port = process.env.PORT || 4400;
 
 const server = http.createServer((req, res) => {
+
+    const authorized = isAuthenticated(req);
 
     const cleanPath = parse(req.url).pathname;
     
@@ -51,7 +53,7 @@ const server = http.createServer((req, res) => {
             if(username === process.env.USERNAME && password === process.env.PASSWORD) {
                 const token = jwt.sign({ name: username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
                 res.writeHead(302, {
-                    "Location": "/admin.html",
+                    "Location": "/index.html",
                     "Set-Cookie": `token=${token}; HttpOnly`
                 });
                 res.end(JSON.stringify({ success: true }));
@@ -64,6 +66,7 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
+    
 
     const template = pageMap[cleanPath];
 
@@ -76,14 +79,11 @@ const server = http.createServer((req, res) => {
                 { id: 2, title: "Another article", date: "December 27, 2025" },
                 { id: 3, title: "Third article", date: "December 28, 2025" }
             ],
-            isAuthenticated:false
+            isAuthenticated: `${authorized}`
         };
-
-
 
         ejs.renderFile(path.join(VIEWS_DIR, template), data, (err, html) => {
             if (err) {
-                console.error(err);
                 res.writeHead(500);
                 res.end("Error rendering page");
             } else {

@@ -10,7 +10,11 @@
     <header>
         <div class="button-area">
             <a href="login.html">
-                <button class="button">login</button>
+                <% if (isAuthenticated) { %>
+                    <button class="button">logout</button>
+                <% } else { %> 
+                    <button class="button">login</button>
+                <% } %>
             </a>
         </div>
         <div class="info-area">
