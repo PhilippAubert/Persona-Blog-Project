@@ -44,7 +44,7 @@ const server = http.createServer((req, res) => {
                 { id: 2, title: "Another article", date: "December 27, 2025" },
                 { id: 3, title: "Third article", date: "December 28, 2025" }
             ],
-            isAdmin:true
+            isAdmin:false
         };
         ejs.renderFile(path.join(VIEWS_DIR, template), data, (err, html) => {
             if (err) {

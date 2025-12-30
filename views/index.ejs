@@ -20,35 +20,34 @@
     <main>
         <ul>
             <% articles.forEach(article => { %>
-                <li class="article-item">
-                    <div class="article-container">
-                        <% if (isAdmin) { %>
-                            <!-- ADMIN VIEW -->
+                <% if (isAdmin) { %>
+                    <li class="article-item">
+                        <div class="article-container">
                             <a href="article.html" class="article-link">
                                 <p class="article-title"><%= article.title %></p>
-                             </a>
-            
+                            </a>
                             <div class="admin-commands-area">
                                 <form action="new.html" method="GET">
                                     <button class="button">Edit</button>
                                 </form>
-                                <form action="/" method="POST">
+                                <form action="article.html" method="POST">
                                     <button class="button">Delete</button>
                                 </form>
                             </div>
-                        <% } else { %>
-                            <!-- NORMAL VIEW -->
-                            <a href="article.html" class="article-link">
-                                <div class="article-container">
-                                    <p class="article-title"><%= article.title %></p>
-                                    <p class="article-date"><%= article.date %></p>
-                                </div>
-                            </a>
-                        <% } %>
-                    </div>
-                </li>
-            <% }) %>            
-        </ul>
+                        </div>
+                    </li>
+                <% } else { %>
+                    <li class="article-item">
+                        <a href="article.html" class="article-link">
+                            <div class="article-container">
+                                <p class="article-title"><%= article.title %></p>
+                                <p class="article-date"><%= article.date %></p>
+                            </div>
+                        </a>
+                    </li>
+                <% } %>
+            <% }) %>
+        </ul>        
     </main>
     <footer>
         <h4>
