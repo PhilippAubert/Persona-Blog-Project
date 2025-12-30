@@ -29,16 +29,16 @@
                              </a>
             
                             <div class="admin-commands-area">
-                                <form action="/edit/<%= article.id %>" method="GET">
+                                <form action="new.html" method="GET">
                                     <button class="button">Edit</button>
                                 </form>
-                                <form action="/delete/<%= article.id %>" method="POST">
+                                <form action="/" method="POST">
                                     <button class="button">Delete</button>
                                 </form>
                             </div>
                         <% } else { %>
                             <!-- NORMAL VIEW -->
-                            <a href="/article/<%= article.id %>" class="article-link">
+                            <a href="article.html" class="article-link">
                                 <div class="article-container">
                                     <p class="article-title"><%= article.title %></p>
                                     <p class="article-date"><%= article.date %></p>

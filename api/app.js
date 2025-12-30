@@ -6,20 +6,13 @@ import path from "path";
 import { fileURLToPath, parse
 } from "url";
 
+import pageMap from "./config/pageMap.js";
+
 
 const FILENAME = fileURLToPath(import.meta.url);
 const DIRNAME = path.dirname(FILENAME);
 const PUBLIC_DIR = path.join(DIRNAME, "../public");
 const VIEWS_DIR = path.join(DIRNAME, "../views");
-
-const pageMap = {
-    "/": "index.ejs",
-    "/index.html": "index.ejs",
-    "/login.html": "login.ejs",
-    "/admin.html": "admin.ejs",
-    "/new.html": "new.ejs",
-    "/article.html": "article.ejs"
-};
 
 const port = 3000;
 
