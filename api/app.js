@@ -9,8 +9,8 @@ import { fileURLToPath, parse
 
 const FILENAME = fileURLToPath(import.meta.url);
 const DIRNAME = path.dirname(FILENAME);
-const PUBLIC_DIR = path.join(DIRNAME, "public");
-const VIEWS_DIR = path.join(DIRNAME, "views");
+const PUBLIC_DIR = path.join(DIRNAME, "../public");
+const VIEWS_DIR = path.join(DIRNAME, "../views");
 
 const port = 3000;
 
