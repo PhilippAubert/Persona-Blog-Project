@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./styles/styles.css">
+    <link rel="stylesheet" href="/styles/styles.css">
     <title>A PERSONAL BLOG</title>
 </head>
 <body>
@@ -19,30 +19,35 @@
     </header>
     <main>
         <ul>
-            <li class="article-item">                
-                <a href="/article.html" class="article-link">
+            <% articles.forEach(article => { %>
+                <li class="article-item">
                     <div class="article-container">
-                        <p class="article-title">My article</p>
-                        <p class="article-date">December 26, 2025</p>
+                        <% if (isAdmin) { %>
+                            <!-- ADMIN VIEW -->
+                            <a href="article.html" class="article-link">
+                                <p class="article-title"><%= article.title %></p>
+                             </a>
+            
+                            <div class="admin-commands-area">
+                                <form action="/edit/<%= article.id %>" method="GET">
+                                    <button class="button">Edit</button>
+                                </form>
+                                <form action="/delete/<%= article.id %>" method="POST">
+                                    <button class="button">Delete</button>
+                                </form>
+                            </div>
+                        <% } else { %>
+                            <!-- NORMAL VIEW -->
+                            <a href="/article/<%= article.id %>" class="article-link">
+                                <div class="article-container">
+                                    <p class="article-title"><%= article.title %></p>
+                                    <p class="article-date"><%= article.date %></p>
+                                </div>
+                            </a>
+                        <% } %>
                     </div>
-                </a>
-            </li>
-            <li class="article-item">                
-                <a href="/article.html" class="article-link">
-                    <div class="article-container">
-                        <p class="article-title">My article</p>
-                        <p class="article-date">December 26, 2025</p>
-                    </div>
-                </a>
-            </li>
-            <li class="article-item">                
-                <a href="/article.html" class="article-link">
-                    <div class="article-container">
-                        <p class="article-title">My article</p>
-                        <p class="article-date">December 26, 2025</p>
-                    </div>
-                </a>
-            </li>
+                </li>
+            <% }) %>            
         </ul>
     </main>
     <footer>

@@ -12,6 +12,15 @@ const DIRNAME = path.dirname(FILENAME);
 const PUBLIC_DIR = path.join(DIRNAME, "../public");
 const VIEWS_DIR = path.join(DIRNAME, "../views");
 
+const pageMap = {
+    "/": "index.ejs",
+    "/index.html": "index.ejs",
+    "/login.html": "login.ejs",
+    "/admin.html": "admin.ejs",
+    "/new.html": "new.ejs",
+    "/article.html": "article.ejs"
+};
+
 const port = 3000;
 
 const server = http.createServer((req, res) => {
@@ -32,7 +41,8 @@ const server = http.createServer((req, res) => {
         return;
     }
     
-    if (cleanPath.startsWith("/")) {
+    const template = pageMap[cleanPath];
+    if (template) {
         const data = {
             title: "A PERSONAL BLOG",
             year: new Date().getFullYear(),
@@ -40,22 +50,19 @@ const server = http.createServer((req, res) => {
                 { id: 1, title: "My article", date: "December 26, 2025" },
                 { id: 2, title: "Another article", date: "December 27, 2025" },
                 { id: 3, title: "Third article", date: "December 28, 2025" }
-            ]
+            ],
+            isAdmin:true
         };
-
-        ejs.renderFile(
-            path.join(VIEWS_DIR, "index.ejs"),
-            data,
-            (err, html) => {
-                if (err) {
-                    res.writeHead(500);
-                    res.end("Error rendering template");
-                } else {
-                    res.writeHead(200, { "Content-Type": "text/html" });
-                    res.end(html);
-                }
+        ejs.renderFile(path.join(VIEWS_DIR, template), data, (err, html) => {
+            if (err) {
+                console.error(err);
+                res.writeHead(500);
+                res.end("Error rendering page");
+            } else {
+                res.writeHead(200, { "Content-Type": "text/html" });
+                res.end(html);
             }
-        );
+        });
         return;
     }
 
