@@ -1,3 +1,4 @@
+//COULD BE REWRITTEN, CHECK HTML/EJS
 
 export const pageMap = {
     "/": "index.ejs",

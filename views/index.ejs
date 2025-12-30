@@ -20,7 +20,7 @@
     <main>
         <ul>
             <% articles.forEach(article => { %>
-                <% if (isAdmin) { %>
+                <% if (isAuthenticated) { %>
                     <li class="article-item">
                         <div class="article-container">
                             <a href="article.html" class="article-link">

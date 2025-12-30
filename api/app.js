@@ -1,4 +1,5 @@
 import ejs from "ejs";
+import dotenv from "dotenv";
 
 import http from "http";
 import fs from "fs";
@@ -8,18 +9,21 @@ import { fileURLToPath, parse
 
 import pageMap from "./config/pageMap.js";
 
-
 const FILENAME = fileURLToPath(import.meta.url);
 const DIRNAME = path.dirname(FILENAME);
 const PUBLIC_DIR = path.join(DIRNAME, "../public");
 const VIEWS_DIR = path.join(DIRNAME, "../views");
 
-const port = 3000;
+dotenv.config();
+
+const port = process.env.PORT || 4400;
 
 const server = http.createServer((req, res) => {
 
+    //SUPER-BIZARRE! TOO MUCH PATH STUFF! 
     const cleanPath = parse(req.url).pathname;
     
+    // CSSLOADER! REFACTOR!
     if (cleanPath.startsWith("/styles")) {
         const filePath = path.join(PUBLIC_DIR, cleanPath);
         fs.readFile(filePath, (err, data) => {
@@ -35,6 +39,7 @@ const server = http.createServer((req, res) => {
     }
     
     const template = pageMap[cleanPath];
+
     if (template) {
         const data = {
             title: "A PERSONAL BLOG",
@@ -44,8 +49,10 @@ const server = http.createServer((req, res) => {
                 { id: 2, title: "Another article", date: "December 27, 2025" },
                 { id: 3, title: "Third article", date: "December 28, 2025" }
             ],
-            isAdmin:false
+            isAuthenticated:false
         };
+
+
         ejs.renderFile(path.join(VIEWS_DIR, template), data, (err, html) => {
             if (err) {
                 console.error(err);
