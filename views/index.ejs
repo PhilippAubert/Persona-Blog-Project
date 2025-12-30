@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/styles.css">
+    <title>A PERSONAL BLOG</title>
+</head>
+<body>
+    <header>
+        <div class="button-area">
+            <a href="login.html">
+                <button class="button">login</button>
+            </a>
+        </div>
+        <div class="info-area">
+            <h1 class="headline">Personal Blog</h1>
+        </div>
+    </header>
+    <main>
+        <ul>
+            <% articles.forEach(article => { %>
+                <% if (isAdmin) { %>
+                    <li class="article-item">
+                        <div class="article-container">
+                            <a href="article.html" class="article-link">
+                                <p class="article-title"><%= article.title %></p>
+                            </a>
+                            <div class="admin-commands-area">
+                                <form action="new.html" method="GET">
+                                    <button class="button">Edit</button>
+                                </form>
+                                <form action="article.html" method="POST">
+                                    <button class="button">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                <% } else { %>
+                    <li class="article-item">
+                        <a href="article.html" class="article-link">
+                            <div class="article-container">
+                                <p class="article-title"><%= article.title %></p>
+                                <p class="article-date"><%= article.date %></p>
+                            </div>
+                        </a>
+                    </li>
+                <% } %>
+            <% }) %>
+        </ul>        
+    </main>
+    <footer>
+        <h4>
+            <%= year %>
+            u-jin22
+        </h4>
+    </footer>
+</body>
+</html>

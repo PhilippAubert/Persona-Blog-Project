@@ -4,7 +4,9 @@
   "description": "Based on  https://roadmap.sh/projects/personal-blog",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon api/app.js",
+    "start":"node api/app.js"
   },
   "repository": {
     "type": "git",
@@ -16,5 +18,15 @@
   "bugs": {
     "url": "https://github.com/PhilippAubert/Persona-Blog-Project/issues"
   },
-  "homepage": "https://github.com/PhilippAubert/Persona-Blog-Project#readme"
+  "homepage": "https://github.com/PhilippAubert/Persona-Blog-Project#readme",
+  "type": "module",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "nodemon": "^3.1.11"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "eslint": "^9.39.2",
+    "globals": "^16.5.0"
+  }
 }
