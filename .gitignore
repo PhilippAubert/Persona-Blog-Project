@@ -1,3 +1,4 @@
 /node_modules
 requirements.txt
-eslint.config.jss
+.vscode/
+eslint.config.js
