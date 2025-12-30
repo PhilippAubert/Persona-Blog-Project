@@ -1,5 +1,7 @@
 import ejs from "ejs";
 import dotenv from "dotenv";
+import jwt from 'jsonwebtoken';
+import {parse as parseQuery} from "querystring";
 
 import http from "http";
 import fs from "fs";
@@ -20,11 +22,9 @@ const port = process.env.PORT || 4400;
 
 const server = http.createServer((req, res) => {
 
-    //SUPER-BIZARRE! TOO MUCH PATH STUFF! 
     const cleanPath = parse(req.url).pathname;
     
-    // CSSLOADER! REFACTOR!
-    if (cleanPath.startsWith("/styles")) {
+    if (cleanPath === "/styles/styles.css") {
         const filePath = path.join(PUBLIC_DIR, cleanPath);
         fs.readFile(filePath, (err, data) => {
             if (err) {
@@ -38,6 +38,33 @@ const server = http.createServer((req, res) => {
         return;
     }
     
+
+    //LOGIN!
+    if (cleanPath === "/login.html" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => {
+            body += chunk.toString();
+        });
+        req.on("end", () => {
+            const parsed = parseQuery(body);
+            const { username, password } = parsed;
+            if(username === process.env.USERNAME && password === process.env.PASSWORD) {
+                const token = jwt.sign({ name: username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+                res.writeHead(302, {
+                    "Location": "/admin.html",
+                    "Set-Cookie": `token=${token}; HttpOnly`
+                });
+                res.end(JSON.stringify({ success: true }));
+            } else {
+                res.writeHead(302, {
+                    "Location": "/login.html"
+                });
+                res.end(JSON.stringify({ success: false, message: "Invalid credentials" }));
+            }
+        });
+        return;
+    }
+
     const template = pageMap[cleanPath];
 
     if (template) {
@@ -51,6 +78,7 @@ const server = http.createServer((req, res) => {
             ],
             isAuthenticated:false
         };
+
 
 
         ejs.renderFile(path.join(VIEWS_DIR, template), data, (err, html) => {
