@@ -24,6 +24,8 @@ const server = http.createServer((req, res) => {
 
     const authorized = isAuthenticated(req);
 
+    console.log(authorized);
+
     const cleanPath = parse(req.url).pathname;
     
     if (cleanPath === "/styles/styles.css") {
@@ -39,7 +41,15 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
-    
+
+    if (cleanPath === "/index.html" && req.method === "POST") {
+        res.writeHead(302, {
+            "Location": "/index.html",
+            "Set-Cookie": "token=; HttpOnly; Max-Age=0"
+        });
+        res.end();
+        return;
+    };
 
     //LOGIN!
     if (cleanPath === "/login.html" && req.method === "POST") {
@@ -79,7 +89,7 @@ const server = http.createServer((req, res) => {
                 { id: 2, title: "Another article", date: "December 27, 2025" },
                 { id: 3, title: "Third article", date: "December 28, 2025" }
             ],
-            isAuthenticated: `${authorized}`
+            isAuthenticated: authorized
         };
 
         ejs.renderFile(path.join(VIEWS_DIR, template), data, (err, html) => {

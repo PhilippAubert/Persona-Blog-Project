@@ -9,13 +9,18 @@
 <body>
     <header>
         <div class="button-area">
-            <a href="login.html">
-                <% if (isAuthenticated) { %>
+            <% if (isAuthenticated) { %>
+                <form action="index.html" method="post">                  
                     <button class="button">logout</button>
-                <% } else { %> 
+                </form>
+                <a href="new.html">
+                    <button class="button">+ add</button>
+                </a>
+            <% } else { %> 
+                <form action="login.html" method="post">                        
                     <button class="button">login</button>
-                <% } %>
-            </a>
+                </form>
+            <% } %>
         </div>
         <div class="info-area">
             <h1 class="headline">Personal Blog</h1>

@@ -43,9 +43,11 @@ a {
 
 .button-area {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: flex-start;
+    gap: 8px;
 }
+
 
 .button {
     padding: 0.5em 1em;
@@ -100,7 +102,7 @@ form {
 }
 
 input {
-    flex:1;
+    flex: 1;
 }
 
 textarea {
@@ -109,12 +111,12 @@ textarea {
 
 .username-input {
     height: 32px;
-    flex:unset;
+    flex: unset;
 }
 
 .pw-input {
     height: 32px;
-    flex:unset;
+    flex: unset;
 }
 
 .article-item {
