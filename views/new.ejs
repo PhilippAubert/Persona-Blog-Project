@@ -8,6 +8,16 @@
 </head>
 <body>
     <header>
+        <div class="button-area">
+            <% if (isAuthenticated) { %>
+                <form action="/logout" method="post">                  
+                    <button class="button">logout</button>
+                </form>
+                <a href="index.html">
+                    <button class="button">back</button>
+                </a>
+            <% } %>
+        </div>
         <div class="info-area">
             <h1 class="headline">New Article</h1>
         </div>
