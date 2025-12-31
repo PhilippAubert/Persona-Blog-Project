@@ -27,7 +27,6 @@ const server = http.createServer((req, res) => {
     const cleanPath = parse(req.url).pathname;
 
     //CSS-LOADER!
-    
     if (cleanPath === "/styles/styles.css") {
         const filePath = path.join(PUBLIC_DIR, cleanPath);
         fs.readFile(filePath, (err, data) => {
@@ -39,6 +38,15 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
+        return;
+    }
+
+    if (cleanPath === "/new.html" && !authorized) {
+        res.writeHead(302, {
+            "Location": "/index.html",
+            "ERROR":"Missing credentials!"
+        })
+        res.end();
         return;
     }
 
