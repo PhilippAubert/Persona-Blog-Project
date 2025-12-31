@@ -9,9 +9,18 @@
 <body>
     <header>
         <div class="button-area">
-            <a href="login.html">
-                <button class="button">login</button>
-            </a>
+            <% if (isAuthenticated) { %>
+                <form action="/logout" method="post">                  
+                    <button class="button">logout</button>
+                </form>
+                <a href="new.html">
+                    <button class="button">+ add</button>
+                </a>
+            <% } else { %> 
+                <form action="login.html" method="post">                        
+                    <button class="button">login</button>
+                </form>
+            <% } %>
         </div>
         <div class="info-area">
             <h1 class="headline">Personal Blog</h1>
@@ -20,11 +29,12 @@
     <main>
         <ul>
             <% articles.forEach(article => { %>
-                <% if (isAdmin) { %>
+                <% if (isAuthenticated) { %>
                     <li class="article-item">
                         <div class="article-container">
                             <a href="article.html" class="article-link">
                                 <p class="article-title"><%= article.title %></p>
+                                <p class="article-date"><%= article.date %></p>
                             </a>
                             <div class="admin-commands-area">
                                 <form action="new.html" method="GET">

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon api/app.js",
-    "start":"node api/app.js"
+    "start": "node api/app.js"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,10 @@
   "homepage": "https://github.com/PhilippAubert/Persona-Blog-Project#readme",
   "type": "module",
   "dependencies": {
+    "cookie": "^1.1.1",
+    "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
+    "jsonwebtoken": "^9.0.3",
     "nodemon": "^3.1.11"
   },
   "devDependencies": {

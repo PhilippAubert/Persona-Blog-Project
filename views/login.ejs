@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./styles/styles.css">
+    <link rel="stylesheet" href="/styles/styles.css">
     <title>A PERSONAL BLOG</title>
 </head>
 <body>
@@ -18,18 +18,19 @@
         </div>
     </header>
     <main>
-        <form action="./admin.html" method="get">
-            <input class="username-input" required type="text" placeholder="Username">
-            <input class="pw-input" required type="text" placeholder="Password">
-            <button 
-                type="submit" 
-                class="button">
+        <form action="/login.html" method="POST">
+            <input class="username-input" name="username" required type="text" placeholder="Username">
+            <input class="pw-input" name="password" required type="password" placeholder="Password">
+            <button type="submit" class="button">
                 login
             </button type="submit">
         </form>
     </main>
     <footer>
-        <h4>2025 u-jin22</h4>
+        <h4>
+            <%= year %>
+            u-jin22
+        </h4>
     </footer>
 </body>
 </html>

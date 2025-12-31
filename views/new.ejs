@@ -8,6 +8,16 @@
 </head>
 <body>
     <header>
+        <div class="button-area">
+            <% if (isAuthenticated) { %>
+                <form action="/logout" method="post">                  
+                    <button class="button">logout</button>
+                </form>
+                <% } %>
+            <a href="index.html">
+                <button class="button">back</button>
+            </a>
+        </div>
         <div class="info-area">
             <h1 class="headline">New Article</h1>
         </div>
@@ -25,7 +35,10 @@
         </form>
     </main>
     <footer>
-        <h4>2025 u-jin22</h4>
+        <h4>
+            <%= year %>
+            u-jin22
+        </h4>
     </footer>
 </body>
 </html>
