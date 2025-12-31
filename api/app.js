@@ -24,9 +24,9 @@ const server = http.createServer((req, res) => {
 
     const authorized = isAuthenticated(req);
 
-    console.log(authorized);
-
     const cleanPath = parse(req.url).pathname;
+
+    //CSS-LOADER!
     
     if (cleanPath === "/styles/styles.css") {
         const filePath = path.join(PUBLIC_DIR, cleanPath);
@@ -42,7 +42,8 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    if (cleanPath === "/index.html" && req.method === "POST") {
+    //LOGOUT!
+    if (cleanPath === "/logout" && req.method === "POST") {
         res.writeHead(302, {
             "Location": "/index.html",
             "Set-Cookie": "token=; HttpOnly; Max-Age=0"
