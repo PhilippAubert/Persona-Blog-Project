@@ -1,11 +1,11 @@
 import ejs from "ejs";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import { parse as parseQuery } from "querystring";
 
 import http from "http";
 import fs from "fs";
 import path from "path";
+import { parse as parseQuery } from "querystring";
 import { fileURLToPath, parse } from "url";
 
 import pageMap from "./config/pageMap.js";
@@ -41,6 +41,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    //WHITELIST
     if (cleanPath === "/new.html" && !authorized) {
         res.writeHead(302, {
             "Location": "/index.html",
@@ -84,22 +85,18 @@ const server = http.createServer((req, res) => {
             }
         });
         return;
+
+
     }
     
 
+    //RENDERING HTML! 
     const template = pageMap[cleanPath];
-
     if (template) {
-        const data = {
-            title: "A PERSONAL BLOG",
-            year: new Date().getFullYear(),
-            articles: [
-                { id: 1, title: "My article", date: "December 26, 2025" },
-                { id: 2, title: "Another article", date: "December 27, 2025" },
-                { id: 3, title: "Third article", date: "December 28, 2025" }
-            ],
-            isAuthenticated: authorized
-        };
+        
+        //READ FILE! 
+        // ELSE WRITE FILE! 
+        
 
         ejs.renderFile(path.join(VIEWS_DIR, template), data, (err, html) => {
             if (err) {

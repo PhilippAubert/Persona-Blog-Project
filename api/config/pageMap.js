@@ -4,7 +4,6 @@ export const pageMap = {
     "/": "index.ejs",
     "/index.html": "index.ejs",
     "/login.html": "login.ejs",
-    "/admin.html": "admin.ejs",
     "/new.html": "new.ejs",
     "/article.html": "article.ejs"
 };

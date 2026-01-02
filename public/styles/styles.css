@@ -160,7 +160,7 @@ textarea {
 
 
 .text {
-    padding: 1rem;
+    padding: 1rem 0;
     font-family: Georgia, 'Times New Roman', Times, serif;
     line-height: 1.6;
 }
