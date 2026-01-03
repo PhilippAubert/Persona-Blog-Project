@@ -15,6 +15,9 @@ const FILENAME = fileURLToPath(import.meta.url);
 const DIRNAME = path.dirname(FILENAME);
 const PUBLIC_DIR = path.join(DIRNAME, "../public");
 const VIEWS_DIR = path.join(DIRNAME, "../views");
+const POSTS_DIR = path.join(DIRNAME, "posts");
+const POSTS_FILE = path.join(POSTS_DIR, "posts.json");
+
 
 dotenv.config();
 
@@ -88,38 +91,60 @@ const server = http.createServer((req, res) => {
         return;
     }
     
+    //POST SOMETHING!! 
+    if (cleanPath === "/new.html" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => {
+            body += chunk.toString();
+        });
+        req.on("end", () => {
+            const parsedBody = parseQuery(body);
+
+            fs.readFile(POSTS_FILE, "utf-8", (err, data) => {
+                if (err) {
+                    console.error(err);
+                    res.end("Error retrieving posts!");
+                    return;
+                }
+            
+                const posts = JSON.parse(data);
+                posts.articles.push(parsedBody);
+            
+                fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2), err => {
+                    if (err) {
+                        console.error(err);
+                        res.end("Error saving post!");
+                        return;
+                    }
+                    res.writeHead(302, { Location: "/index.html" });
+                    res.end();
+                });
+            });            
+    });        
+    return;
+}
 
     //RENDERING HTML! 
-    //ONLY DEPENDS ON "DATA", NEEEDS A REFACTORING! 
 
     const template = pageMap[cleanPath];
     if (template) {
-        fs.readFile("./posts/posts.json", "utf-8", (err, data) => {
+        fs.readFile(POSTS_FILE, "utf-8", (err, data) => {
             let jsonData = { 
                 articles: [], 
-                isAuthenticated: authorized, 
-                year: new Date().getFullYear()
+                year: new Date().getFullYear(),
+                isAuthenticated: authorized
             };
+        
             if (err) {
-                //could be specified like ENOENT or sth 
-                const initialList = JSON.stringify({ articles: [] }, null, 2);
-                const dirPath = path.join(DIRNAME, "posts");
-                if (!fs.existsSync(dirPath)) {
-                        fs.mkdirSync(dirPath, { recursive: true });
-
-                        fs.writeFile(`${dirPath}/posts.json`, initialList, (err) => {
-                        if (err) console.error(err); 
-                    });
+                if (!fs.existsSync(POSTS_DIR)) {
+                    fs.mkdirSync(POSTS_DIR, { recursive: true });
                 }
+                fs.writeFileSync(POSTS_FILE, JSON.stringify(jsonData, null, 2));
             } else {
-                try {
-                    const parsed = JSON.parse(data);
-                    jsonData.articles = parsed.articles || [];
-                } catch (parseErr) {
-                    console.error("Error parsing JSON:", parseErr);
-                    jsonData.articles = [];
-                }
+                const parsed = JSON.parse(data);
+                jsonData.articles = parsed.articles || [];
             }
+
             ejs.renderFile(path.join(VIEWS_DIR, template), jsonData, (err, html) => {
                 if (err) {
                     console.error("EJS render error:", err);
