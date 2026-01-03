@@ -144,7 +144,6 @@ const server = http.createServer((req, res) => {
   
         const posts = JSON.parse(data);
   
-        console.log(index);
         if (index < 0 || index >= posts.articles.length) {
             res.writeHead(400, { "Content-Type": "text/plain" });
             res.end("Index out of bounds");
