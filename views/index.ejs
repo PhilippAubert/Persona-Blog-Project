@@ -31,38 +31,28 @@
             <% if (!articles || articles.length === 0) { %>
                 <h2>NO POSTS YET!</h2>
             <% } else { %>
-                <% articles.forEach(article => { %>
-                    <% if (isAuthenticated) { %>
-                        <li class="article-item">
-                            <div class="article-container">
-                                <a href="article.html" class="article-link">
-                                    <p class="article-title"><%= article.title %></p>
-                                    <p class="article-date"><%= article.date %></p>
-                                </a>
-                                <div class="admin-commands-area">
-                                    <form action="new.html" method="GET">
-                                        <button class="button">Edit</button>
-                                    </form>
-                                    <form action="article.html" method="POST">
-                                        <button class="button">Delete</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </li>
-                    <% } else { %>
-                        <li class="article-item">
-                            <a href="article.html" class="article-link">
-                                <div class="article-container">
-                                    <p class="article-title"><%= article.title %></p>
-                                    <p class="article-date"><%= article.date %></p>
-                                </div>
-                            </a>
-                        </li>
-                    <% } %>
+            <% articles.forEach((article, i) => { %>
+                <li class="article-item">
+                    <div class="article-container">
+                        <a href="article.html" class="article-link">
+                            <p class="article-title"><%= article.title %></p>
+                            <p class="article-date"><%= article.date %></p>
+                        </a>
+                <% if (isAuthenticated) { %>
+                    <div class="admin-commands-area">
+                        <form action="new.html" method="GET">
+                            <button class="button">Edit</button>
+                        </form>
+                        <form action="/delete/<%= i %>" method="POST">
+                            <button class="button">Delete</button>
+                        </form>
+                    </div> <% } %>
+                    </div>
+                    </li>
                 <% }) %>
             <% } %>
-        </ul>        
-    </main>
+        </ul>
+    </main>      
     <footer>
         <h4>
             <%= year %>

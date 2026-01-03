@@ -107,25 +107,65 @@ const server = http.createServer((req, res) => {
                     return;
                 }
             
-                const posts = JSON.parse(data);
-                posts.articles.unshift(parsedBody);
+            const posts = JSON.parse(data);
+            posts.articles.push(parsedBody);
             
-                fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2), err => {
-                    if (err) {
-                        console.error(err);
-                        res.end("Error saving post!");
-                        return;
+            fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2), err => {
+                if (err) {
+                    console.error(err);
+                    res.end("Error saving post!");
+                    return;
                     }
                     res.writeHead(302, { Location: "/index.html" });
                     res.end();
                 });
             });            
-    });        
+        });        
+        return;
+    }
+
+    //DELETE SOMETHING!
+    if (cleanPath.startsWith("/delete/") && req.method === "POST") {
+        const parts = cleanPath.split("/"); 
+        const index = parseInt(parts[2], 10);
+  
+        if (isNaN(index)) {
+            res.writeHead(400, { "Content-Type": "text/plain" });
+            res.end("Invalid index");
+            return;
+        }
+  
+        fs.readFile(POSTS_FILE, "utf-8", (err, data) => {
+            if (err) {
+                res.writeHead(500, { "Content-Type": "text/plain" });
+                res.end("Error reading posts!");
+                return;
+            }
+  
+        const posts = JSON.parse(data);
+  
+        console.log(index);
+        if (index < 0 || index >= posts.articles.length) {
+            res.writeHead(400, { "Content-Type": "text/plain" });
+            res.end("Index out of bounds");
+            return;
+        }
+  
+        posts.articles.splice(index, 1);
+  
+        fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2), (err) => {
+            if (err) {
+                res.writeHead(500, { "Content-Type": "text/plain" });
+                res.end("Error saving posts!");
+                return;
+            }
+            res.writeHead(302, { Location: "/index.html" });
+            res.end();
+        });
+    });
     return;
 }
-
-//DELETE SOMETHING!
-
+      
 
 
     //RENDERING HTML! 
