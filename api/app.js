@@ -26,6 +26,7 @@ const server = http.createServer((req, res) => {
 
     const cleanPath = parse(req.url).pathname;
 
+
     //CSS-LOADER!
     if (cleanPath === "/styles/styles.css") {
         const filePath = path.join(PUBLIC_DIR, cleanPath);
@@ -46,7 +47,7 @@ const server = http.createServer((req, res) => {
         res.writeHead(302, {
             "Location": "/index.html",
             "ERROR":"Missing credentials!"
-        })
+        });
         res.end();
         return;
     }
@@ -62,7 +63,7 @@ const server = http.createServer((req, res) => {
     };
 
     //LOGIN!
-    if (cleanPath === "/login.html" && req.method === "POST") {
+    if (cleanPath === "/login" && req.method === "POST") {
         let body = "";
         req.on("data", chunk => {
             body += chunk.toString();
@@ -85,34 +86,56 @@ const server = http.createServer((req, res) => {
             }
         });
         return;
-
-
     }
     
 
     //RENDERING HTML! 
+    //ONLY DEPENDS ON "DATA", NEEEDS A REFACTORING! 
+
     const template = pageMap[cleanPath];
     if (template) {
+        fs.readFile("./posts/posts.json", "utf-8", (err, data) => {
+            let jsonData = { 
+                articles: [], 
+                isAuthenticated: authorized, 
+                year: new Date().getFullYear()
+            };
         
-        //READ FILE! 
-        // ELSE WRITE FILE! 
-        
-
-        ejs.renderFile(path.join(VIEWS_DIR, template), data, (err, html) => {
             if (err) {
-                res.writeHead(500);
-                res.end("Error rendering page");
+                console.error("Error reading file, creating new one:", err);
+                const initialList = JSON.stringify({ articles: [] }, null, 2);
+                fs.writeFile("./posts/posts.json", initialList, (err) => {
+                    if (err) console.error(err);
+                    console.log("File has been saved!");
+                });
             } else {
-                res.writeHead(200, { "Content-Type": "text/html" });
-                res.end(html);
+                try {
+                    const parsed = JSON.parse(data);
+                    jsonData.articles = parsed.articles || [];
+                    console.log(authorized);
+                } catch (parseErr) {
+                    console.error("Error parsing JSON:", parseErr);
+                    jsonData.articles = [];
+                }
             }
+
+            ejs.renderFile(path.join(VIEWS_DIR, template), jsonData, (err, html) => {
+                console.log(jsonData);
+                if (err) {
+                    console.error("EJS render error:", err);
+                    res.writeHead(500);
+                    res.end("Error rendering page");
+                } else {
+                    res.writeHead(200, { "Content-Type": "text/html" });
+                    res.end(html);
+                }
+            });
         });
         return;
     }
 
     res.writeHead(404, { "Content-Type": "text/plain" });
     res.end("Page not found");
-
 });
 
 server.listen(port, () => console.log("Server running on port", port));
