@@ -100,27 +100,27 @@ const server = http.createServer((req, res) => {
                 isAuthenticated: authorized, 
                 year: new Date().getFullYear()
             };
-        
             if (err) {
-                console.error("Error reading file, creating new one:", err);
+                //could be specified like ENOENT or sth 
                 const initialList = JSON.stringify({ articles: [] }, null, 2);
-                fs.writeFile("./posts/posts.json", initialList, (err) => {
-                    if (err) console.error(err);
-                    console.log("File has been saved!");
-                });
+                const dirPath = path.join(DIRNAME, "posts");
+                if (!fs.existsSync(dirPath)) {
+                        fs.mkdirSync(dirPath, { recursive: true });
+
+                        fs.writeFile(`${dirPath}/posts.json`, initialList, (err) => {
+                        if (err) console.error(err); 
+                    });
+                }
             } else {
                 try {
                     const parsed = JSON.parse(data);
                     jsonData.articles = parsed.articles || [];
-                    console.log(authorized);
                 } catch (parseErr) {
                     console.error("Error parsing JSON:", parseErr);
                     jsonData.articles = [];
                 }
             }
-
             ejs.renderFile(path.join(VIEWS_DIR, template), jsonData, (err, html) => {
-                console.log(jsonData);
                 if (err) {
                     console.error("EJS render error:", err);
                     res.writeHead(500);
