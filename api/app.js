@@ -108,7 +108,7 @@ const server = http.createServer((req, res) => {
                 }
             
                 const posts = JSON.parse(data);
-                posts.articles.push(parsedBody);
+                posts.articles.unshift(parsedBody);
             
                 fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2), err => {
                     if (err) {
@@ -123,6 +123,10 @@ const server = http.createServer((req, res) => {
     });        
     return;
 }
+
+//DELETE SOMETHING!
+
+
 
     //RENDERING HTML! 
 
