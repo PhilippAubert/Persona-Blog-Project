@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import isAuthenticated from "./auth/authenticate.js";
 
 import { renderPage, 
-    readPosts, 
+    readPosts,
     writePosts, 
     generateId, 
     parsePathId, 
@@ -16,16 +16,25 @@ export const routes = [
     {
         method: "GET",
         path: /^\/styles\/.+/,
-        handler: async (req, res) => {
-            const pathMatch = req.url;
-            fs.readFile(path.join("./public", pathMatch), (err, data) => {
+        handler: (req, res) => {
+            const filePath = path.join("./public", req.url);
+            fs.readFile(filePath, (err, data) => {
                 if (err) res.writeHead(404).end();
                 else res.writeHead(200, { "Content-Type": "text/css" }).end(data);
             });
         }
     },
 
-    // ------------------- LOGIN -------------------
+    // ------------------- LOGIN PAGE (GET) -------------------
+    {
+        method: "GET",
+        path: "/login",
+        handler: (req, res) => {
+            renderPage(res, "login.ejs", { year: new Date().getFullYear(), isAuthenticated: isAuthenticated(req) });
+        }
+    },
+
+    // ------------------- LOGIN (POST) -------------------
     {
         method: "POST",
         path: "/login",
@@ -36,9 +45,9 @@ export const routes = [
                 const { username, password } = Object.fromEntries(new URLSearchParams(body));
                 if (username === process.env.USERNAME && password === process.env.PASSWORD) {
                     const token = jwt.sign({ name: username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
-                    res.writeHead(302, { Location: "/index.html", "Set-Cookie": `token=${token}; HttpOnly` }).end();
+                    res.writeHead(302, { Location: "/", "Set-Cookie": `token=${token}; HttpOnly` }).end();
                 } else {
-                    res.writeHead(302, { Location: "/login.html" }).end();
+                    res.writeHead(302, { Location: "/login" }).end();
                 }
             });
         }
@@ -49,11 +58,11 @@ export const routes = [
         method: "POST",
         path: "/logout",
         handler: (req, res) => {
-            res.writeHead(302, { Location: "/index.html", "Set-Cookie": "token=; HttpOnly; Max-Age=0" }).end();
+            res.writeHead(302, { Location: "/", "Set-Cookie": "token=; HttpOnly; Max-Age=0" }).end();
         }
     },
 
-    // ------------------- INDEX -------------------
+    // ------------------- INDEX PAGE -------------------
     {
         method: "GET",
         path: /^\/(index\.html)?$/,
@@ -87,22 +96,21 @@ export const routes = [
     // ------------------- NEW / EDIT PAGE -------------------
     {
         method: "GET",
-        path: /^\/new(\.html)?(\/.+)?$/,
+        path: /^\/new(\/.+)?$/,
         handler: (req, res) => {
             const authorized = isAuthenticated(req);
-            if (!authorized) return res.writeHead(302, { Location: "/index.html" }).end();
-    
+            if (!authorized) return res.writeHead(302, { Location: "/" }).end();
+
             const id = parsePathId(req.url) || null;
-    
             readPosts(posts => {
                 let article = {};
                 if (id) {
                     const found = posts.articles.find(a => a.id === id);
                     if (found) article = found;
                 }
-    
+
                 if (!article.date) article.date = formatDate();
-    
+
                 renderPage(res, "new.ejs", {
                     article,
                     id,
@@ -111,7 +119,7 @@ export const routes = [
                 });
             });
         }
-    },    
+    },
 
     // ------------------- CREATE / UPDATE -------------------
     {
@@ -122,7 +130,7 @@ export const routes = [
             if (!authorized) return res.writeHead(403).end("Forbidden");
 
             let body = "";
-            req.on("data", c => body += c.toString());
+            req.on("data", chunk => body += chunk.toString());
             req.on("end", () => {
                 const postData = Object.fromEntries(new URLSearchParams(body));
                 readPosts(posts => {
@@ -136,7 +144,7 @@ export const routes = [
                         posts.articles.push({ ...postData, id });
                     }
 
-                    writePosts(posts, () => res.writeHead(302, { Location: "/index.html" }).end());
+                    writePosts(posts, () => res.writeHead(302, { Location: "/" }).end());
                 });
             });
         }
@@ -153,8 +161,25 @@ export const routes = [
             const id = parsePathId(req.url);
             readPosts(posts => {
                 posts.articles = posts.articles.filter(a => a.id !== id);
-                writePosts(posts, () => res.writeHead(302, { Location: "/index.html" }).end());
+                writePosts(posts, () => res.writeHead(302, { Location: "/" }).end());
             });
         }
+    },
+
+    // ------------------- REDIRECTS FOR OLD .html URLs -------------------
+    {
+        method: "GET",
+        path: "/new.html",
+        handler: (req, res) => res.writeHead(302, { Location: "/new" }).end()
+    },
+    {
+        method: "GET",
+        path: "/login.html",
+        handler: (req, res) => res.writeHead(302, { Location: "/login" }).end()
+    },
+    {
+        method: "GET",
+        path: "/index.html",
+        handler: (req, res) => res.writeHead(302, { Location: "/" }).end()
     }
 ];

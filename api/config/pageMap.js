@@ -7,4 +7,3 @@ const pageMap = {
 };
 
 export default pageMap;
-  
