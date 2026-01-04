@@ -1,17 +1,13 @@
 import fs from "fs";
 import path from "path";
 import ejs from "ejs";
-import crypto from "crypto";
 
-// -------------------- PATHS --------------------
-export const DIRNAME = path.resolve();
-export const POSTS_DIR = path.join(DIRNAME, "api", "posts");
-export const POSTS_FILE = path.join(POSTS_DIR, "posts.json");
-export const VIEWS_DIR = path.join(DIRNAME, "views");
+const POSTS_FILE = path.join("./api/posts/posts.json");
 
-// -------------------- HELPERS --------------------
-export const renderPage = (res, template, data) =>
-    ejs.renderFile(path.join(VIEWS_DIR, template), data, (err, html) => {
+// Render EJS safely
+export function renderPage(res, template, data) {
+    const templatePath = path.join("./views", template);
+    ejs.renderFile(templatePath, data, (err, html) => {
         if (err) {
             console.error("EJS render error:", err);
             res.writeHead(500);
@@ -21,35 +17,43 @@ export const renderPage = (res, template, data) =>
             res.end(html);
         }
     });
+}
 
-export const readPosts = (callback) => {
+// Read posts.json
+export function readPosts(callback) {
+    if (!fs.existsSync(POSTS_FILE)) {
+        fs.mkdirSync(path.dirname(POSTS_FILE), { recursive: true });
+        fs.writeFileSync(POSTS_FILE, JSON.stringify({ articles: [] }, null, 2));
+    }
+
     fs.readFile(POSTS_FILE, "utf-8", (err, data) => {
-        if (err) {
-            const empty = { articles: [] };
-            fs.mkdirSync(POSTS_DIR, { recursive: true });
-            fs.writeFileSync(POSTS_FILE, JSON.stringify(empty, null, 2));
-            callback(empty);
-        } else {
-            callback(JSON.parse(data));
+        if (err) return callback({ articles: [] });
+        try {
+            const posts = JSON.parse(data);
+            callback(posts);
+        } catch {
+            callback({ articles: [] });
         }
     });
-};
+}
 
-export const writePosts = (posts, callback) =>
+// Write posts.json
+export function writePosts(posts, callback) {
     fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2), callback);
+}
 
-export const generateId = () => crypto.randomBytes(6).toString("hex");
+// Generate a unique id
+export function generateId() {
+    return Date.now().toString();
+}
 
-export const parsePathId = (urlPath) => {
-    const parts = urlPath.split("/").filter(Boolean);
-    return parts.length > 1 ? parts[1] : null;
-};
+// Extract id from path like /update/:id
+export function parsePathId(url) {
+    const parts = url.split("/");
+    return parts[2] || null;
+}
 
-export const formatDate = (date = new Date()) => {
-    return date.toLocaleDateString("de-DE", {
-        timeZone: "Europe/Berlin",
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
-    });
-};
+// Format current date YYYY-MM-DD
+export function formatDate() {
+    return new Date().toISOString().slice(0, 10);
+}

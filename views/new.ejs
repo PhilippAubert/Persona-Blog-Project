@@ -4,44 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/styles.css">
-    <title>
-        <%= article ? "Edit Article" : "New Article" %>
-    </title>
+    <title>New Article</title>
 </head>
 <body>
     <header>
         <div class="button-area">
             <% if (isAuthenticated) { %>
                 <form action="/logout" method="post">
-                    <button class="button">logout</button>
+                    <button class="button">Logout</button>
                 </form>
-                <a href="/index.html">
-                    <button class="button">back</button>
-                </a>
-                <% } %>
+            <% } %>
+            <a href="index.html">
+                <button class="button">Back</button>
+            </a>
         </div>
         <div class="info-area">
-            <h1 class="headline">
-                <%= article ? "Edit Article" : "New Article" %>
-            </h1>
+            <h1 class="headline">New Article</h1>
         </div>
     </header>
+
     <main>
-        <form action="<%= article ? '/update/' + id : '/new.html' %>" method="POST">
-            <input required type="text" name="title" placeholder="Article title"
-                value="<%= article ? article.title : '' %>">
-            <input required type="text" name="date" placeholder="Publishing date"
-                value="<%= article ? article.date : currentDate %>">
-            <textarea required name="content" placeholder="Content"><%= article ? article.content : '' %></textarea>
+        <form action="<%= id ? `/update/${id}` : '/new' %>" method="POST">
+            <input 
+                required 
+                type="text" 
+                name="title" 
+                placeholder="Article title" 
+                value="<%= article.title || '' %>"
+            >
+            <input 
+                required 
+                type="text" 
+                name="date" 
+                placeholder="Publishing date" 
+                value="<%= article.date || '' %>"
+            >
+
+            <textarea 
+                required 
+                name="content" 
+                placeholder="Content"
+            ><%= article.content || '' %></textarea>
             <button type="submit" class="button">
-                <%= article ? "update" : "publish" %>
+                <%= id ? 'Update' : 'Publish' %>
             </button>
         </form>
     </main>
+
     <footer>
-        <h4>
-            <%= year %> u-jin22
-        </h4>
+        <h4><%= year %> u-jin22</h4>
     </footer>
 </body>
 </html>
