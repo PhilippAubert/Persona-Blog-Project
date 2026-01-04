@@ -15,8 +15,9 @@ export const isAuthenticated = (req) =>{
         jwt.verify(cookies.token, process.env.ACCESS_TOKEN_SECRET);
         return true;
     } catch (err) {
-        return false;
+        console.error(err);
     }
-}
+    return false;
+};
 
 export default isAuthenticated;

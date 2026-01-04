@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/styles.css">
-    <title>A PERSONAL BLOG</title>
+    <title>Personal Blog</title>
 </head>
+
 <body>
     <header>
         <div class="button-area">
             <% if (isAuthenticated) { %>
-                <form action="/logout" method="post">                  
+                <form action="/logout" method="post">
                     <button class="button">logout</button>
                 </form>
-                <a href="new.html">
+                <a href="/new">
                     <button class="button">+ add</button>
                 </a>
-            <% } else { %> 
-                <form action="login.html" method="post">                        
-                    <button class="button">login</button>
-                </form>
-            <% } %>
+                <% } else { %>
+                    <a href="/login">
+                        <button class="button">login</button>
+                    </a>
+                    <% } %>
         </div>
         <div class="info-area">
             <h1 class="headline">Personal Blog</h1>
@@ -28,41 +30,39 @@
     </header>
     <main>
         <ul>
-            <% articles.forEach(article => { %>
-                <% if (isAuthenticated) { %>
-                    <li class="article-item">
-                        <div class="article-container">
-                            <a href="article.html" class="article-link">
-                                <p class="article-title"><%= article.title %></p>
-                                <p class="article-date"><%= article.date %></p>
-                            </a>
-                            <div class="admin-commands-area">
-                                <form action="new.html" method="GET">
-                                    <button class="button">Edit</button>
-                                </form>
-                                <form action="article.html" method="POST">
-                                    <button class="button">Delete</button>
-                                </form>
-                            </div>
-                        </div>
-                    </li>
+            <% if (!articles || articles.length===0) { %>
+                <h2>NO POSTS YET!</h2>
                 <% } else { %>
-                    <li class="article-item">
-                        <a href="article.html" class="article-link">
+                    <% articles.forEach((article)=> { %>
+                        <li class="article-item">
                             <div class="article-container">
-                                <p class="article-title"><%= article.title %></p>
-                                <p class="article-date"><%= article.date %></p>
+                                <!-- link to the article using its ID -->
+                                <a href="/article/<%= article.id %>" class="article-link">
+                                    <p class="article-title">
+                                        <%= article.title %>
+                                    </p>
+                                    <p class="article-date">
+                                        <%= article.date %>
+                                    </p>
+                                </a>
+
+                                <% if (isAuthenticated) { %>
+                                    <div class="admin-commands-area">
+                                        <a href="/new/<%= article.id %>"><button class="button">Edit</button></a>
+                                        <form action="/delete/<%= article.id %>" method="POST">
+                                            <button class="button">Delete</button>
+                                        </form>
+                                    </div>
+                                    <% } %>
                             </div>
-                        </a>
-                    </li>
+                        </li>
+                    <% }) %>
                 <% } %>
-            <% }) %>
-        </ul>        
+        </ul>
     </main>
     <footer>
         <h4>
-            <%= year %>
-            u-jin22
+            <%= year %> u-jin22
         </h4>
     </footer>
 </body>
