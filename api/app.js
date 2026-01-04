@@ -65,22 +65,15 @@ const server = http.createServer((req, res) => {
     const cleanPath = parse(req.url).pathname;
 
     /* ---------- CSS ---------- */
-
     if (cleanPath === "/styles/styles.css") {
         fs.readFile(path.join(PUBLIC_DIR, cleanPath), (err, data) => {
-            if (err) {
-                res.writeHead(404);
-                res.end();
-            } else {
-                res.writeHead(200, { "Content-Type": "text/css" });
-                res.end(data);
-            }
+            if (err) { res.writeHead(404); res.end(); }
+            else { res.writeHead(200, { "Content-Type": "text/css" }); res.end(data); }
         });
         return;
     }
 
     /* ---------- AUTH GUARD ---------- */
-
     if (cleanPath === "/new.html" && !authorized) {
         res.writeHead(302, { Location: "/index.html" });
         res.end();
@@ -88,7 +81,6 @@ const server = http.createServer((req, res) => {
     }
 
     /* ---------- LOGOUT ---------- */
-
     if (cleanPath === "/logout" && req.method === "POST") {
         res.writeHead(302, {
             Location: "/index.html",
@@ -99,23 +91,13 @@ const server = http.createServer((req, res) => {
     }
 
     /* ---------- LOGIN ---------- */
-
     if (cleanPath === "/login" && req.method === "POST") {
         let body = "";
         req.on("data", c => (body += c.toString()));
         req.on("end", () => {
             const { username, password } = parseQuery(body);
-
-            if (
-                username === process.env.USERNAME &&
-                password === process.env.PASSWORD
-            ) {
-                const token = jwt.sign(
-                    { name: username },
-                    process.env.ACCESS_TOKEN_SECRET,
-                    { expiresIn: "1h" }
-                );
-
+            if (username === process.env.USERNAME && password === process.env.PASSWORD) {
+                const token = jwt.sign({ name: username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
                 res.writeHead(302, {
                     Location: "/index.html",
                     "Set-Cookie": `token=${token}; HttpOnly`
@@ -130,93 +112,65 @@ const server = http.createServer((req, res) => {
     }
 
     /* ---------- CREATE ---------- */
-
     if (cleanPath === "/new.html" && req.method === "POST") {
         let body = "";
         req.on("data", c => (body += c.toString()));
         req.on("end", () => {
             const newArticle = parseQuery(body);
-
             readPosts(posts => {
                 posts.articles.push(newArticle);
-                fs.writeFile(
-                    POSTS_FILE,
-                    JSON.stringify(posts, null, 2),
-                    () => {
-                        res.writeHead(302, { Location: "/index.html" });
-                        res.end();
-                    }
-                );
+                fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2), () => {
+                    res.writeHead(302, { Location: "/index.html" });
+                    res.end();
+                });
             });
         });
         return;
     }
 
     /* ---------- UPDATE ---------- */
-
     if (cleanPath.startsWith("/update/") && req.method === "POST") {
         const index = parseInt(cleanPath.split("/")[2], 10);
-        if (isNaN(index)) {
-            res.writeHead(400);
-            res.end("Invalid index");
-            return;
-        }
+        if (isNaN(index)) { res.writeHead(400); res.end("Invalid index"); return; }
 
         let body = "";
         req.on("data", c => (body += c.toString()));
         req.on("end", () => {
             const updated = parseQuery(body);
-
             readPosts(posts => {
-                if (!posts.articles[index]) {
-                    res.writeHead(400);
-                    res.end("Index out of bounds");
-                    return;
-                }
-
+                if (!posts.articles[index]) { res.writeHead(400); res.end("Index out of bounds"); return; }
                 posts.articles[index] = updated;
-
-                fs.writeFile(
-                    POSTS_FILE,
-                    JSON.stringify(posts, null, 2),
-                    () => {
-                        res.writeHead(302, { Location: "/index.html" });
-                        res.end();
-                    }
-                );
+                fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2), () => {
+                    res.writeHead(302, { Location: "/index.html" });
+                    res.end();
+                });
             });
         });
         return;
     }
 
     /* ---------- DELETE ---------- */
-
     if (cleanPath.startsWith("/delete/") && req.method === "POST") {
         const index = parseInt(cleanPath.split("/")[2], 10);
-
         readPosts(posts => {
             posts.articles.splice(index, 1);
-            fs.writeFile(
-                POSTS_FILE,
-                JSON.stringify(posts, null, 2),
-                () => {
-                    res.writeHead(302, { Location: "/index.html" });
-                    res.end();
-                }
-            );
+            fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2), () => {
+                res.writeHead(302, { Location: "/index.html" });
+                res.end();
+            });
         });
         return;
     }
 
     /* ---------- EDIT (GET) ---------- */
-
-    if (cleanPath.startsWith("/new/") && req.method === "GET") {
-        const index = parseInt(cleanPath.split("/")[2], 10);
-
+    if ((cleanPath === "/new.html" || cleanPath.startsWith("/new/")) && req.method === "GET") {
+        let index = null;
+        if (cleanPath.startsWith("/new/")) {
+            index = parseInt(cleanPath.split("/")[2], 10);
+        }
         readPosts(posts => {
             renderPage(res, "new.ejs", {
-                articles: posts.articles,
-                article: posts.articles[index],
+                article: index !== null ? posts.articles[index] : null,
                 id: index,
                 year: new Date().getFullYear(),
                 isAuthenticated: authorized
@@ -225,8 +179,26 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    /* ---------- DEFAULT RENDER ---------- */
+    /* ---------- VIEW SINGLE ARTICLE ---------- */
+    if (cleanPath.startsWith("/article/") && req.method === "GET") {
+        const index = parseInt(cleanPath.split("/")[2], 10);
+        readPosts(posts => {
+            const article = posts.articles[index];
+            if (!article) {
+                res.writeHead(404, { "Content-Type": "text/plain" });
+                res.end("Article not found");
+                return;
+            }
+            renderPage(res, "article.ejs", {
+                article,
+                year: new Date().getFullYear(),
+                isAuthenticated: authorized
+            });
+        });
+        return;
+    }
 
+    /* ---------- DEFAULT RENDER ---------- */
     const template = pageMap[cleanPath];
     if (template) {
         readPosts(posts => {
@@ -240,13 +212,9 @@ const server = http.createServer((req, res) => {
     }
 
     /* ---------- 404 ---------- */
-
     res.writeHead(404, { "Content-Type": "text/plain" });
     res.end("Page not found");
 });
 
 /* -------------------- START -------------------- */
-
-server.listen(port, () =>
-    console.log(`Server running on port ${port}`)
-);
+server.listen(port, () => console.log(`Server running on port ${port}`));

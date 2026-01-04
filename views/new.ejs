@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/styles.css">
-    <title>A PERSONAL BLOG</title>
+    <title>
+        <%= article ? "Edit Article" : "New Article" %>
+    </title>
 </head>
-
 <body>
     <header>
         <div class="button-area">
@@ -15,13 +16,15 @@
                 <form action="/logout" method="post">
                     <button class="button">logout</button>
                 </form>
+                <a href="/index.html">
+                    <button class="button">back</button>
+                </a>
                 <% } %>
-                    <a href="/">
-                        <button class="button">back</button>
-                    </a>
         </div>
         <div class="info-area">
-            <h1 class="headline">New Article</h1>
+            <h1 class="headline">
+                <%= article ? "Edit Article" : "New Article" %>
+            </h1>
         </div>
     </header>
     <main>
@@ -34,15 +37,12 @@
             <button type="submit" class="button">
                 <%= article ? "update" : "publish" %>
             </button>
-
         </form>
     </main>
     <footer>
         <h4>
-            <%= year %>
-                u-jin22
+            <%= year %> u-jin22
         </h4>
     </footer>
 </body>
-
 </html>

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/styles.css">
-    <title>A PERSONAL BLOG</title>
+    <title>Personal Blog</title>
 </head>
 <body>
     <header>
@@ -13,14 +14,10 @@
                 <form action="/logout" method="post">
                     <button class="button">logout</button>
                 </form>
-                <a href="new.html">
+                <a href="/new.html">
                     <button class="button">+ add</button>
                 </a>
-                <% } else { %>
-                    <form action="login.html" method="post">
-                        <button class="button">login</button>
-                    </form>
-            <% } %>
+                <% } %>
         </div>
         <div class="info-area">
             <h1 class="headline">Personal Blog</h1>
@@ -34,7 +31,7 @@
                     <% articles.forEach((article, i)=> { %>
                         <li class="article-item">
                             <div class="article-container">
-                                <a href="article.html" class="article-link">
+                                <a href="/article/<%= i %>" class="article-link">
                                     <p class="article-title">
                                         <%= article.title %>
                                     </p>
@@ -44,9 +41,7 @@
                                 </a>
                                 <% if (isAuthenticated) { %>
                                     <div class="admin-commands-area">
-                                        <a href="/new/<%= i %>">
-                                            <button class="button">Edit</button>
-                                        </a>
+                                        <a href="/new/<%= i %>"><button class="button">Edit</button></a>
                                         <form action="/delete/<%= i %>" method="POST">
                                             <button class="button">Delete</button>
                                         </form>
@@ -54,8 +49,8 @@
                                     <% } %>
                             </div>
                         </li>
-                    <% }) %>
-            <% } %>
+                        <% }) %>
+                            <% } %>
         </ul>
     </main>
     <footer>
