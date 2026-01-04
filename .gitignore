@@ -1,0 +1,9 @@
+/node_modules
+requirements.txt
+.vscode/
+eslint.config.js
+.env
+.prettierrc
+.eslintrc.cjs
+api/posts
+api/posts/posts.json

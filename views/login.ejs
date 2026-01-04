@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/styles.css">
+    <title>Personal Blog</title>
+</head>
+<body>
+    <header>
+        <div class="button-area">
+            <a href="index.html">
+                <button class="button">back</button>
+            </a>
+        </div>
+        <div class="info-area">
+            <h1 class="headline">LOGIN</h1>
+        </div>
+    </header>
+    <main>
+        <form action="/login" method="POST">
+            <input class="username-input" name="username" required type="text" placeholder="Username">
+            <input class="pw-input" name="password" required type="password" placeholder="Password">
+            <button type="submit" class="button">
+                login
+            </button type="submit">
+        </form>
+    </main>
+    <footer>
+        <h4>
+            <%= year %>
+                u-jin22
+        </h4>
+    </footer>
+</body>
+</html>
