@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/styles/styles.css">
     <title>Personal Blog</title>
 </head>
+
 <body>
     <header>
         <div class="button-area">
@@ -17,7 +18,11 @@
                 <a href="/new.html">
                     <button class="button">+ add</button>
                 </a>
-                <% } %>
+                <% } else { %>
+                    <a href="/login.html">
+                        <button class="button">login</button>
+                    </a>
+                    <% } %>
         </div>
         <div class="info-area">
             <h1 class="headline">Personal Blog</h1>
@@ -28,10 +33,11 @@
             <% if (!articles || articles.length===0) { %>
                 <h2>NO POSTS YET!</h2>
                 <% } else { %>
-                    <% articles.forEach((article, i)=> { %>
+                    <% articles.forEach((article)=> { %>
                         <li class="article-item">
                             <div class="article-container">
-                                <a href="/article/<%= i %>" class="article-link">
+                                <!-- link to the article using its ID -->
+                                <a href="/article/<%= article.id %>" class="article-link">
                                     <p class="article-title">
                                         <%= article.title %>
                                     </p>
@@ -39,18 +45,19 @@
                                         <%= article.date %>
                                     </p>
                                 </a>
+
                                 <% if (isAuthenticated) { %>
                                     <div class="admin-commands-area">
-                                        <a href="/new/<%= i %>"><button class="button">Edit</button></a>
-                                        <form action="/delete/<%= i %>" method="POST">
+                                        <a href="/new/<%= article.id %>"><button class="button">Edit</button></a>
+                                        <form action="/delete/<%= article.id %>" method="POST">
                                             <button class="button">Delete</button>
                                         </form>
                                     </div>
                                     <% } %>
                             </div>
                         </li>
-                        <% }) %>
-                            <% } %>
+                    <% }) %>
+                <% } %>
         </ul>
     </main>
     <footer>

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +31,7 @@
             <input required type="text" name="title" placeholder="Article title"
                 value="<%= article ? article.title : '' %>">
             <input required type="text" name="date" placeholder="Publishing date"
-                value="<%= article ? article.date : '' %>">
+                value="<%= article ? article.date : currentDate %>">
             <textarea required name="content" placeholder="Content"><%= article ? article.content : '' %></textarea>
             <button type="submit" class="button">
                 <%= article ? "update" : "publish" %>

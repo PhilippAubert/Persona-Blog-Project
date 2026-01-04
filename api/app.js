@@ -1,107 +1,46 @@
 import http from "http";
-import fs from "fs";
-import path from "path";
-import ejs from "ejs";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-
+import fs from "fs";
+import path from "path";
 import { parse as parseQuery } from "querystring";
-import { fileURLToPath } from "url";
-import { parse } from "url";
+import { parse as parseURL } from "url";
 
 import pageMap from "./config/pageMap.js";
 import isAuthenticated from "./auth/authenticate.js";
+import { renderPage, 
+    readPosts, 
+    writePosts, 
+    generateId, 
+    parsePathId, 
+    formatDate } 
+    from "./helpers/helpers.js";
 
 dotenv.config();
-
-/* -------------------- PATHS -------------------- */
-
-const FILENAME = fileURLToPath(import.meta.url);
-const DIRNAME = path.dirname(FILENAME);
-
-const PUBLIC_DIR = path.join(DIRNAME, "../public");
-const VIEWS_DIR = path.join(DIRNAME, "../views");
-const POSTS_DIR = path.join(DIRNAME, "posts");
-const POSTS_FILE = path.join(POSTS_DIR, "posts.json");
-
 const port = process.env.PORT || 4400;
-
-/* -------------------- HELPERS -------------------- */
-
-const renderPage = (res, template, data) => {
-    ejs.renderFile(
-        path.join(VIEWS_DIR, template),
-        data,
-        (err, html) => {
-            if (err) {
-                console.error("EJS render error:", err);
-                res.writeHead(500);
-                res.end("Error rendering page");
-            } else {
-                res.writeHead(200, { "Content-Type": "text/html" });
-                res.end(html);
-            }
-        }
-    );
-};
-
-const  readPosts = (callback) => {
-    fs.readFile(POSTS_FILE, "utf-8", (err, data) => {
-        if (err) {
-            const empty = { articles: [] };
-            fs.mkdirSync(POSTS_DIR, { recursive: true });
-            fs.writeFileSync(POSTS_FILE, JSON.stringify(empty, null, 2));
-            callback(empty);
-        } else {
-            callback(JSON.parse(data));
-        }
-    });
-};
-
-/* -------------------- SERVER -------------------- */
 
 const server = http.createServer((req, res) => {
     const authorized = isAuthenticated(req);
-    const cleanPath = parse(req.url).pathname;
+    const cleanPath = parseURL(req.url).pathname;
 
-    /* ---------- CSS ---------- */
-    if (cleanPath === "/styles/styles.css") {
-        fs.readFile(path.join(PUBLIC_DIR, cleanPath), (err, data) => {
-            if (err) { res.writeHead(404); res.end(); }
-            else { res.writeHead(200, { "Content-Type": "text/css" }); res.end(data); }
+    // ------------------- CSS -------------------
+    if (cleanPath.startsWith("/styles/")) {
+        fs.readFile(path.join("./public", cleanPath), (err, data) => {
+            if (err) res.writeHead(404).end();
+            else res.writeHead(200, { "Content-Type": "text/css" }).end(data);
         });
         return;
     }
 
-    /* ---------- AUTH GUARD ---------- */
-    if (cleanPath === "/new.html" && !authorized) {
-        res.writeHead(302, { Location: "/index.html" });
-        res.end();
-        return;
-    }
-
-    /* ---------- LOGOUT ---------- */
-    if (cleanPath === "/logout" && req.method === "POST") {
-        res.writeHead(302, {
-            Location: "/index.html",
-            "Set-Cookie": "token=; HttpOnly; Max-Age=0"
-        });
-        res.end();
-        return;
-    }
-
-    /* ---------- LOGIN ---------- */
+    // ------------------- LOGIN -------------------
     if (cleanPath === "/login" && req.method === "POST") {
         let body = "";
-        req.on("data", c => (body += c.toString()));
+        req.on("data", chunk => body += chunk.toString());
         req.on("end", () => {
             const { username, password } = parseQuery(body);
             if (username === process.env.USERNAME && password === process.env.PASSWORD) {
                 const token = jwt.sign({ name: username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
-                res.writeHead(302, {
-                    Location: "/index.html",
-                    "Set-Cookie": `token=${token}; HttpOnly`
-                });
+                res.writeHead(302, { Location: "/index.html", "Set-Cookie": `token=${token}; HttpOnly` });
                 res.end();
             } else {
                 res.writeHead(302, { Location: "/login.html" });
@@ -111,94 +50,82 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    /* ---------- CREATE ---------- */
-    if (cleanPath === "/new.html" && req.method === "POST") {
-        let body = "";
-        req.on("data", c => (body += c.toString()));
-        req.on("end", () => {
-            const newArticle = parseQuery(body);
-            readPosts(posts => {
-                posts.articles.push(newArticle);
-                fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2), () => {
-                    res.writeHead(302, { Location: "/index.html" });
-                    res.end();
-                });
-            });
-        });
+    // ------------------- LOGOUT -------------------
+    if (cleanPath === "/logout" && req.method === "POST") {
+        res.writeHead(302, { Location: "/index.html", "Set-Cookie": "token=; HttpOnly; Max-Age=0" });
+        res.end();
         return;
     }
 
-    /* ---------- UPDATE ---------- */
-    if (cleanPath.startsWith("/update/") && req.method === "POST") {
-        const index = parseInt(cleanPath.split("/")[2], 10);
-        if (isNaN(index)) { res.writeHead(400); res.end("Invalid index"); return; }
+    // ------------------- NEW / EDIT FORM -------------------
+    if (cleanPath.startsWith("/new") && req.method === "GET") {
+        if (!authorized) return res.writeHead(302, { Location: "/index.html" }).end();
 
-        let body = "";
-        req.on("data", c => (body += c.toString()));
-        req.on("end", () => {
-            const updated = parseQuery(body);
-            readPosts(posts => {
-                if (!posts.articles[index]) { res.writeHead(400); res.end("Index out of bounds"); return; }
-                posts.articles[index] = updated;
-                fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2), () => {
-                    res.writeHead(302, { Location: "/index.html" });
-                    res.end();
-                });
-            });
-        });
-        return;
-    }
-
-    /* ---------- DELETE ---------- */
-    if (cleanPath.startsWith("/delete/") && req.method === "POST") {
-        const index = parseInt(cleanPath.split("/")[2], 10);
+        const id = parsePathId(cleanPath);
         readPosts(posts => {
-            posts.articles.splice(index, 1);
-            fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2), () => {
-                res.writeHead(302, { Location: "/index.html" });
-                res.end();
-            });
-        });
-        return;
-    }
-
-    /* ---------- EDIT (GET) ---------- */
-    if ((cleanPath === "/new.html" || cleanPath.startsWith("/new/")) && req.method === "GET") {
-        let index = null;
-        if (cleanPath.startsWith("/new/")) {
-            index = parseInt(cleanPath.split("/")[2], 10);
-        }
-        readPosts(posts => {
+            const article = id ? posts.articles.find(a => a.id === id) : null;
             renderPage(res, "new.ejs", {
-                article: index !== null ? posts.articles[index] : null,
-                id: index,
-                year: new Date().getFullYear(),
-                isAuthenticated: authorized
-            });
-        });
-        return;
-    }
-
-    /* ---------- VIEW SINGLE ARTICLE ---------- */
-    if (cleanPath.startsWith("/article/") && req.method === "GET") {
-        const index = parseInt(cleanPath.split("/")[2], 10);
-        readPosts(posts => {
-            const article = posts.articles[index];
-            if (!article) {
-                res.writeHead(404, { "Content-Type": "text/plain" });
-                res.end("Article not found");
-                return;
-            }
-            renderPage(res, "article.ejs", {
                 article,
+                id,
                 year: new Date().getFullYear(),
-                isAuthenticated: authorized
+                isAuthenticated: authorized,
+                currentDate: formatDate()
+            });
+        });
+        
+        return;
+    }
+
+    // ------------------- CREATE / UPDATE -------------------
+    if ((cleanPath.startsWith("/new") || cleanPath.startsWith("/update")) && req.method === "POST") {
+        if (!authorized) return res.writeHead(403).end("Forbidden");
+
+        let body = "";
+        req.on("data", c => body += c.toString());
+        req.on("end", () => {
+            const postData = parseQuery(body);
+
+            readPosts(posts => {
+                const id = cleanPath.startsWith("/update/") ? parsePathId(cleanPath) : generateId();
+
+                if (cleanPath.startsWith("/update/")) {
+                    const idx = posts.articles.findIndex(a => a.id === id);
+                    if (idx === -1) return res.writeHead(404).end("Not found");
+                    posts.articles[idx] = { ...postData, id };
+                } else {
+                    posts.articles.push({ ...postData, id });
+                }
+
+                writePosts(posts, () => res.writeHead(302, { Location: "/index.html" }).end());
             });
         });
         return;
     }
 
-    /* ---------- DEFAULT RENDER ---------- */
+    // ------------------- DELETE -------------------
+    if (cleanPath.startsWith("/delete/") && req.method === "POST") {
+        if (!authorized) return res.writeHead(403).end("Forbidden");
+
+        const id = parsePathId(cleanPath);
+        readPosts(posts => {
+            posts.articles = posts.articles.filter(a => a.id !== id);
+            writePosts(posts, () => res.writeHead(302, { Location: "/index.html" }).end());
+        });
+        return;
+    }
+
+    // ------------------- VIEW ARTICLE -------------------
+    if (cleanPath.startsWith("/article/") && req.method === "GET") {
+        const id = parsePathId(cleanPath);
+        readPosts(posts => {
+            const article = posts.articles.find(a => a.id === id);
+            if (!article) return res.writeHead(404).end("Not found");
+            renderPage(res, "article.ejs", { article, year: new Date().getFullYear(), isAuthenticated: authorized });
+        });
+        return;
+    }
+
+    // ------------------- DEFAULT / INDEX -------------------
     const template = pageMap[cleanPath];
     if (template) {
         readPosts(posts => {
@@ -211,10 +138,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    /* ---------- 404 ---------- */
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Page not found");
+    res.writeHead(404).end("Page not found");
 });
 
-/* -------------------- START -------------------- */
 server.listen(port, () => console.log(`Server running on port ${port}`));
