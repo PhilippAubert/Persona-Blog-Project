@@ -10,16 +10,16 @@
     <header>
         <div class="button-area">
             <% if (isAuthenticated) { %>
-                <form action="/logout" method="post">                  
+                <form action="/logout" method="post">
                     <button class="button">logout</button>
                 </form>
                 <a href="new.html">
                     <button class="button">+ add</button>
                 </a>
-            <% } else { %> 
-                <form action="login.html" method="post">                        
-                    <button class="button">login</button>
-                </form>
+                <% } else { %>
+                    <form action="login.html" method="post">
+                        <button class="button">login</button>
+                    </form>
             <% } %>
         </div>
         <div class="info-area">
@@ -28,35 +28,39 @@
     </header>
     <main>
         <ul>
-            <% if (!articles || articles.length === 0) { %>
+            <% if (!articles || articles.length===0) { %>
                 <h2>NO POSTS YET!</h2>
-            <% } else { %>
-            <% articles.forEach((article, i) => { %>
-                <li class="article-item">
-                    <div class="article-container">
-                        <a href="article.html" class="article-link">
-                            <p class="article-title"><%= article.title %></p>
-                            <p class="article-date"><%= article.date %></p>
-                        </a>
-                <% if (isAuthenticated) { %>
-                    <div class="admin-commands-area">
-                        <form action="new.html" method="GET">
-                            <button class="button">Edit</button>
-                        </form>
-                        <form action="/delete/<%= i %>" method="POST">
-                            <button class="button">Delete</button>
-                        </form>
-                    </div> <% } %>
-                    </div>
-                    </li>
-                <% }) %>
+                <% } else { %>
+                    <% articles.forEach((article, i)=> { %>
+                        <li class="article-item">
+                            <div class="article-container">
+                                <a href="article.html" class="article-link">
+                                    <p class="article-title">
+                                        <%= article.title %>
+                                    </p>
+                                    <p class="article-date">
+                                        <%= article.date %>
+                                    </p>
+                                </a>
+                                <% if (isAuthenticated) { %>
+                                    <div class="admin-commands-area">
+                                        <a href="/new/<%= i %>">
+                                            <button class="button">Edit</button>
+                                        </a>
+                                        <form action="/delete/<%= i %>" method="POST">
+                                            <button class="button">Delete</button>
+                                        </form>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </li>
+                    <% }) %>
             <% } %>
         </ul>
-    </main>      
+    </main>
     <footer>
         <h4>
-            <%= year %>
-            u-jin22
+            <%= year %> u-jin22
         </h4>
     </footer>
 </body>

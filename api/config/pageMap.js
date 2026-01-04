@@ -5,6 +5,6 @@ const pageMap = {
     "/new.html": "new.ejs",
     "/article.html": "article.ejs"
 };
-  
-  export default pageMap;
+
+export default pageMap;
   
