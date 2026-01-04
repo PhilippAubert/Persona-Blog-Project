@@ -3,8 +3,13 @@ import path from "path";
 import jwt from "jsonwebtoken";
 
 import isAuthenticated from "./auth/authenticate.js";
-import pageMap from "./config/pageMap.js";
-import { renderPage, readPosts, writePosts, generateId, parsePathId, formatDate } from "./helpers/helpers.js";
+
+import { renderPage, 
+    readPosts, 
+    writePosts, 
+    generateId, 
+    parsePathId, 
+    formatDate } from "./helpers/helpers.js";
 
 export const routes = [
     // ------------------- CSS -------------------

@@ -4,7 +4,6 @@ import ejs from "ejs";
 
 const POSTS_FILE = path.join("./api/posts/posts.json");
 
-// Render EJS safely
 export function renderPage(res, template, data) {
     const templatePath = path.join("./views", template);
     ejs.renderFile(templatePath, data, (err, html) => {
@@ -19,7 +18,6 @@ export function renderPage(res, template, data) {
     });
 }
 
-// Read posts.json
 export function readPosts(callback) {
     if (!fs.existsSync(POSTS_FILE)) {
         fs.mkdirSync(path.dirname(POSTS_FILE), { recursive: true });
@@ -37,23 +35,19 @@ export function readPosts(callback) {
     });
 }
 
-// Write posts.json
 export function writePosts(posts, callback) {
     fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2), callback);
 }
 
-// Generate a unique id
 export function generateId() {
     return Date.now().toString();
 }
 
-// Extract id from path like /update/:id
 export function parsePathId(url) {
     const parts = url.split("/");
     return parts[2] || null;
 }
 
-// Format current date YYYY-MM-DD
 export function formatDate() {
     return new Date().toISOString().slice(0, 10);
 }
